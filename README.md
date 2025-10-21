@@ -1,0 +1,1 @@
+# node-generative-ai-course
