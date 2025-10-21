@@ -14,6 +14,8 @@ async function main() {
             role: 'user',
             content: 'What is Mount Hoverla\'s height?'
         }],
+        temperature: 1,
+        top_p: 0.2,
         n: 2,
     })
 
