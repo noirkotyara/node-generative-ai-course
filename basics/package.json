@@ -1,0 +1,23 @@
+{
+  "name": "basics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node -r ts-node/register --env-file=.env src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "openai": "^6.6.0"
+  },
+  "engines": {
+    "node": "22.19.0",
+    "npm": "10.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
