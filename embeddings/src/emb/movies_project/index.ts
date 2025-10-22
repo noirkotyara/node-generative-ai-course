@@ -1,5 +1,6 @@
 import { generateEmbeddings, loadData } from "../main";
-import {cosineSimilarity} from "../similar";
+import { cosineSimilarity } from "../similar";
+import OpenAI from "openai";
 
 interface Movie {
     name: string,
@@ -13,20 +14,28 @@ interface MovieDataWithEmbeddings {
         embedding: number[]
     }[]
 }
+interface SimilarityItem {
+    input: string,
+    similarity: number
+}
 
 console.log(`What type of movie do you want to watch?`);
 
-process.stdin.addListener('data', async function(input) {
-    const userInput = input.toString().trim();
+function printRecommendedMovies(similarities: SimilarityItem[]) {
+    console.log('The most suitable movies for you are: \n')
+    const sortedSimilarities = similarities.sort((a, b) => b.similarity - a.similarity);
+    sortedSimilarities.forEach(similarity => {
+        console.log(`${similarity.input}: ${similarity.similarity}`);
+    })
+}
+
+function calculateSimilarity(
+    inputEmbedding: OpenAI.CreateEmbeddingResponse,
+) {
     const embeddingsData = loadData<MovieDataWithEmbeddings>('movies_project/movies-embeddings.json')
     const moviesData = loadData<Movie[]>('movies_project/movies.json')
 
-    const inputEmbedding = await generateEmbeddings(userInput);
-
-    const similarities: {
-        input: string,
-        similarity: number
-    }[] = [];
+    const similarities: SimilarityItem[] = [];
 
     for (const movieEmbedding of embeddingsData.data) {
         const similarity = cosineSimilarity(
@@ -39,9 +48,15 @@ process.stdin.addListener('data', async function(input) {
         })
     }
 
-    console.log('The most suitable movies for you are: \n')
-    const sortedSimilarities = similarities.sort((a, b) => b.similarity - a.similarity);
-    sortedSimilarities.forEach(similarity => {
-        console.log(`${similarity.input}: ${similarity.similarity}`);
-    })
+    return similarities;
+}
+
+process.stdin.addListener('data', async function(input) {
+    const userInput = input.toString().trim();
+
+    const inputEmbedding = await generateEmbeddings(userInput);
+
+    const similarities = calculateSimilarity(inputEmbedding);
+
+    printRecommendedMovies(similarities);
 })
