@@ -1,20 +1,20 @@
 import OpenAI from "openai";
 import path from "node:path";
-import {readFileSync} from "fs";
-import {writeFileSync} from "node:fs";
+import { readFileSync, writeFileSync } from "fs";
 
 const EMBEDDINGS_MODEL: OpenAI.Embeddings.EmbeddingModel = 'text-embedding-3-small'
+export type DataWithEmbedding = { input: string, embedding: number[] }
 
 const openAI = new OpenAI();
 
-async function generateEmbeddings(input: string | string[]) {
+export async function generateEmbeddings(input: string | string[]) {
     return openAI.embeddings.create({
         input: input,
         model: EMBEDDINGS_MODEL,
     })
 }
 
-function loadData<T>(fileName: string): T {
+export function loadData<T>(fileName: string): T {
     const dataFilePath = path.join(__dirname, fileName)
     const rawFileData = readFileSync(dataFilePath)
     console.log('[loadData:success]', `Data is loaded from ${dataFilePath}`)
@@ -45,4 +45,4 @@ async function main() {
     saveToFile(dataEmbeddingsToSave, "data-embeddings.json")
 }
 
-main()
+// main()
