@@ -13,7 +13,7 @@ export function getWeather(location: string) {
     return {};
 }
 
-export function validWeatherFunctionArguments<T>(
+export function validateWeatherFunctionArguments<T>(
     functionArguments: unknown,
 ): asserts functionArguments is T {
     if (!functionArguments?.hasOwnProperty("location")) {

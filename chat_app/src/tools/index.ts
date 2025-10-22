@@ -1,7 +1,7 @@
 import Chat from "../core/chat";
 import OpenAI from "openai";
 import { isFunctionCallTool } from "../core/chat.services";
-import { getWeather, validWeatherFunctionArguments } from "./weather-tool";
+import { getWeather, validateWeatherFunctionArguments } from "./weather-tool";
 
 const CHAT_MODEL = 'gpt-4'
 const CHAT_SYSTEM: OpenAI.Chat.Completions.ChatCompletionMessageParam = {
@@ -16,7 +16,9 @@ async function callWeatherTool(
     startedChat: Chat
 ): Promise<OpenAI.Chat.Completions.ChatCompletion> {
     const functionArguments = JSON.parse(weatherCallTool.function.arguments)
-    validWeatherFunctionArguments<{ location: string }>(functionArguments)
+    validateWeatherFunctionArguments<{
+        location: string
+    }>(functionArguments)
     console.log('[weather-chat:functionArguments]', functionArguments);
 
     const toolResponse = getWeather(functionArguments.location)
