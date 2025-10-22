@@ -33,7 +33,7 @@ function saveToFile(
     console.log('[saveToFile:success]', `File is created at ${filePath} `)
 }
 
-async function main() {
+export async function generateDataEmbeddings() {
     const data = loadData<string[]>("data.json")
     const response = await generateEmbeddings(data)
 
