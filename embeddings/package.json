@@ -1,0 +1,20 @@
+{
+  "name": "chat_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node -r ts-node/register --env-file=.env src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "openai": "^6.6.0",
+    "tiktoken": "^1.0.22",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "typescript": "^5.9.3"
+  }
+}
