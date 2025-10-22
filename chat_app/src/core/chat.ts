@@ -3,11 +3,14 @@ import { encoding_for_model, Tiktoken, TiktokenModel } from "tiktoken";
 
 const openAI = new OpenAI();
 
-type ChatModel = Extract<OpenAI.Chat.ChatModel, TiktokenModel>;
+type ChatModel = Extract<OpenAI.ChatModel, TiktokenModel>;
+type ContextMessage = OpenAI.ChatCompletionMessageParam;
+type Tool = OpenAI.ChatCompletionTool;
 
 class Chat {
-    context: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = []
+    context: ContextMessage[] = []
     encoder!: Tiktoken
+    tools: Tool[] = []
 
     constructor(
         public model: ChatModel,
@@ -19,18 +22,20 @@ class Chat {
         this.initEncoder(this.model)
     }
 
-    initEncoder(model: typeof this.model) {
+    initEncoder(model: ChatModel) {
         this.encoder = encoding_for_model(model)
     }
 
-    public pushToContext(context: OpenAI.Chat.Completions.ChatCompletionMessageParam) {
+    public pushToContext(context: ContextMessage) {
         this.context.push(context)
     }
 
     public async provideChatCompletion() {
         const response = await openAI.chat.completions.create({
             model: this.model,
-            messages: this.context
+            messages: this.context,
+            tools: this.tools,
+            tool_choice: this.tools.length ? "auto" : undefined,
         })
 
         this.context.push(response.choices[0].message)
@@ -40,6 +45,10 @@ class Chat {
         }
 
         return response
+    }
+
+    public addTool(tool: Tool) {
+        this.tools.push(tool)
     }
 
     private reduceChatContext() {

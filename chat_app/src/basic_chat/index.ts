@@ -1,4 +1,4 @@
-import Chat from "./chat";
+import Chat from "../core/chat";
 import OpenAI from "openai";
 
 const CHAT_MODEL = 'gpt-4'
