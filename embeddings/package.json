@@ -7,7 +7,7 @@
     "start-emb": "node -r ts-node/register --env-file=.env src/emb/main.ts",
     "start-emb-similar": "node -r ts-node/register --env-file=.env src/emb/similar.ts",
     "start-emb-movies-project": "node -r ts-node/register --env-file=.env src/emb/movies_project/index.ts",
-    "start-chroma": "node -r ts-node/register --env-file=.env src/chroma/Client.ts",
+    "start-chroma": "node -r ts-node/register --env-file=.env src/chroma/client.ts",
     "start-pinecone": "node -r ts-node/register --env-file=.env src/pinecone/main.ts"
   },
   "author": "",
