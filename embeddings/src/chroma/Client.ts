@@ -1,6 +1,6 @@
 import { ChromaClient } from "chromadb";
 import { OpenAIEmbeddingFunction } from "@chroma-core/openai";
-import { clubInfo, studentInfo, universityInfo } from "./data";
+import { clubInfo, studentInfo, universityInfo } from "../data/data";
 import Chat from "./chat";
 
 const chromaClient = new ChromaClient({
@@ -44,7 +44,6 @@ async function main() {
     const questionQuery = await collection.query({
         queryTexts: [question],
         nResults: 1,
-        ids: ["id-1", "id-2", "id-3"]
     })
 
     const queryResult = questionQuery.documents[0][0]

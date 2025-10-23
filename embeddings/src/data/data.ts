@@ -12,3 +12,27 @@ with over 45,000 students across three campuses in Seattle, Tacoma, and Bothell.
 As the flagship institution of the six public universities in Washington state,
 UW encompasses over 500 buildings and 20 million square feet of space,
 including one of the largest library systems in the world.`;
+
+export type InfoMetadata = {
+    info: string,
+    relevance: number,
+    reference: string,
+}
+
+export const infoRecordsMetadata: InfoMetadata[] = [
+    {
+        info: studentInfo,
+        relevance: 3,
+        reference: 'ref-1'
+    },
+    {
+        info: clubInfo,
+        relevance: 8,
+        reference: 'ref-2'
+    },
+    {
+        info: universityInfo,
+        relevance: 1,
+        reference: 'ref-3'
+    }
+]

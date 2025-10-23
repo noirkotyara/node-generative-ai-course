@@ -3,7 +3,7 @@ import { encoding_for_model, Tiktoken, TiktokenModel } from "tiktoken";
 
 const openAI = new OpenAI();
 
-type ChatModel = Extract<OpenAI.ChatModel, TiktokenModel>;
+export type ChatModel = Extract<OpenAI.ChatModel, TiktokenModel>;
 type ContextMessage = OpenAI.ChatCompletionMessageParam;
 type Tool = OpenAI.ChatCompletionTool;
 

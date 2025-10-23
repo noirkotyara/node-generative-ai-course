@@ -7,12 +7,14 @@
     "start-emb": "node -r ts-node/register --env-file=.env src/emb/main.ts",
     "start-emb-similar": "node -r ts-node/register --env-file=.env src/emb/similar.ts",
     "start-emb-movies-project": "node -r ts-node/register --env-file=.env src/emb/movies_project/index.ts",
-    "start-chroma": "node -r ts-node/register --env-file=.env src/chroma/Client.ts"
+    "start-chroma": "node -r ts-node/register --env-file=.env src/chroma/Client.ts",
+    "start-pinecone": "node -r ts-node/register --env-file=.env src/pinecone/main.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@chroma-core/openai": "^0.1.7",
+    "@pinecone-database/pinecone": "^6.1.2",
     "chromadb": "^3.0.17",
     "openai": "^6.6.0",
     "tiktoken": "^1.0.22",
