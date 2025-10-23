@@ -1,0 +1,99 @@
+import OpenAI from "openai";
+import { encoding_for_model, Tiktoken, TiktokenModel } from "tiktoken";
+
+const openAI = new OpenAI();
+
+type ChatModel = Extract<OpenAI.ChatModel, TiktokenModel>;
+type ContextMessage = OpenAI.ChatCompletionMessageParam;
+type Tool = OpenAI.ChatCompletionTool;
+
+class Chat {
+    context: ContextMessage[] = []
+    encoder!: Tiktoken
+    tools: Tool[] = []
+
+    constructor(
+        public model: ChatModel,
+        public maxTokens: number
+    ) {
+        this.model = model
+        this.maxTokens = maxTokens
+
+        this.initEncoder(this.model)
+    }
+
+    initEncoder(model: ChatModel) {
+        this.encoder = encoding_for_model(model)
+    }
+
+    public pushToContext(context: ContextMessage) {
+        this.context.push(context)
+    }
+
+    public async provideChatCompletion(
+        config: Partial<OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming> = {}
+    ) {
+        const { temperature } = config;
+
+        const response = await openAI.chat.completions.create({
+            model: this.model,
+            messages: this.context,
+            tools: this.tools,
+            tool_choice: this.tools.length ? "auto" : undefined,
+            temperature,
+        })
+
+        this.context.push(response.choices[0].message)
+
+        if (response.usage && response.usage.total_tokens > this.maxTokens) {
+            this.reduceChatContext()
+        }
+
+        return response
+    }
+
+    public addTool(tool: Tool) {
+        this.tools.push(tool)
+    }
+
+    private reduceChatContext() {
+        const initialContextLength = this.getContextLength()
+        let contextLength = initialContextLength
+
+        while (contextLength > this.maxTokens) {
+            const oldestContextMessage = this.context.findIndex(message => message.role !== 'system')
+            if (oldestContextMessage) {
+                this.context.splice(oldestContextMessage, 1)
+                contextLength = this.getContextLength()
+                console.log('[context-length]', { initialContextLength, contextLength })
+            }
+
+            if (contextLength < this.maxTokens) {
+                break;
+            }
+        }
+    }
+
+    private getContextLength() {
+        let length = 0;
+
+        for (const message of this.context) {
+            if (Array.isArray(message.content)) {
+                message.content.forEach((content) => {
+                    if (content.type == 'text') {
+                        length += this.encoder.encode(content.type).length
+                    }
+                })
+            } else if (typeof message.content == 'string') {
+                length += this.encoder.encode(message.content).length
+            }
+        }
+
+        return length
+    }
+}
+
+export default Chat;
+
+
+
