@@ -3,9 +3,11 @@ import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import {
     StringOutputParser,
 } from "@langchain/core/output_parsers";
-import { MemoryVectorStore } from "@langchain/classic/vectorstores/memory";
-import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import { Chroma } from "@langchain/community/vectorstores/chroma";
+import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+import path from "node:path";
+import {Document} from "@langchain/core/documents";
 
 const llm = new ChatOpenAI({
     model: "gpt-4",
@@ -14,25 +16,32 @@ const llm = new ChatOpenAI({
 })
 
 async function main() {
-    const loader = new CheerioWebBaseLoader('https://pixly-kit.vercel.app/')
+    const pdfFilePath = path.join(__dirname, "books.pdf")
+    const loader = new PDFLoader(pdfFilePath, {
+        splitPages: false,
+    })
     const docs = await loader.load();
 
     const splitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 200,
-        chunkOverlap: 20
+        separators: ['. /n']
     })
 
     const splitDocs = await splitter.splitDocuments(docs)
+    const embeddings = new OpenAIEmbeddings({ model: "text-embedding-3-small" })
+    const dbConfig = {
+        collectionName: "books_with_embeddings_9",
+        clientParams: {
+            host: "localhost",
+            port: 8000,
+        },
+    };
+    const vectorStore = new Chroma(embeddings, dbConfig);
+    await vectorStore.addDocuments(splitDocs.map(doc => (
+        new Document({ pageContent: doc.pageContent, metadata: doc.metadata.source || 'default-metadata' })
+    )))
 
-    // create memory vector store
-    const vectorStore = new MemoryVectorStore(new OpenAIEmbeddings());
+    const question = 'What themes does Gone with the Wind explore?'
 
-    // fill memory vector store with documents
-    await vectorStore.addDocuments(splitDocs)
-
-    const question = 'What does pixly kit means?'
-
-    //get retriever to get relevant documents based on question
     const retriever = vectorStore.asRetriever({
         k: 2
     })
@@ -49,9 +58,11 @@ async function main() {
         .pipe(parser)
 
     const response = await chain.invoke({
-        context: relevantQuestionDocuments.map(doc => doc.pageContent).join(','),
+        context: relevantQuestionDocuments.map((doc) => doc.pageContent).join(','),
         question,
     })
 
     console.log('[main:response]', response)
 }
+
+main();
