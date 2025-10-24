@@ -6,14 +6,19 @@
   "scripts": {
     "start": "node -r ts-node/register --env-file=.env src/main.ts",
     "start-output-parsers": "node -r ts-node/register --env-file=.env src/output-parsers.ts",
-    "start-rag": "node -r ts-node/register --env-file=.env src/rag/basic.ts"
+    "start-rag": "node -r ts-node/register --env-file=.env src/rag/basic.ts",
+    "start-rag-web": "node -r ts-node/register --env-file=.env src/rag/web-loader.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@langchain/classic": "^1.0.0",
+    "@langchain/community": "^1.0.0",
     "@langchain/core": "^1.0.1",
     "@langchain/openai": "^1.0.0",
+    "@langchain/textsplitters": "^1.0.0",
+    "cheerio": "^1.1.2",
+    "install": "^0.13.0",
     "langchain": "^1.0.1"
   },
   "engines": {
